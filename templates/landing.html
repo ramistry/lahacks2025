@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to ???</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(to right, #ece9e6, #ffffff);}
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+<!-- Navbar -->
+<nav class="flex justify-between items-center px-10 py-5 bg-white/80 backdrop-blur-md shadow-md fixed w-full z-10">
+  <a href="/" class="text-2xl font-bold text-gray-800 hover:text-gray-900 transition">????</a>
+  <div class="flex space-x-12 text-gray-700 font-semibold text-lg">
+    <a href="#home" class="hover:text-gray-900 transition">Home</a>
+    <a href="#about" class="hover:text-gray-900 transition">About</a>
+    <a href="#team" class="hover:text-gray-900 transition">Team</a>
+    <a href="#contact" class="hover:text-gray-900 transition">Contact</a>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="home" class="flex flex-col justify-center items-center text-center p-8 space-y-6" style="min-height: 100vh; padding-top: 140px;">
+  <h1 class="text-6xl font-extrabold animate__animated animate__fadeInDown">Networking made less nerve-wrecking</h1>
+  <p class="text-gray-600 max-w-xl mt-6 animate__animated animate__fadeIn animate__delay-1s text-lg">
+    Because stalking alumni on LinkedIn and getting ghosted is exhausting.<br>Just ask your questions here!!
+  </p>
+  <!-- Action Buttons -->
+<div class="flex flex-col md:flex-row gap-6 justify-center mt-8">
+    <!-- Action Buttons -->
+<div class="flex flex-col md:flex-row gap-6 justify-center mt-8">
+
+    <a href="/questionnaire" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 active:scale-95">
+      📚 Register Yourself as a Mentor
+    </a>
+  
+    <a href="/network" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 active:scale-95">
+      🌐 Start Networking
+    </a>
+  
+  </div>  
+  
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-36 px-8 text-center space-y-6 bg-gray-100">
+  <h2 class="text-4xl font-bold text-gray-800">About MeshMate</h2>
+  <p class="text-gray-600 max-w-2xl mx-auto mt-4">
+    bla bla bla, will figure out later. 
+</section>
+
+<!-- Team Section -->
+<section id="team" class="py-36 px-8 text-center space-y-6">
+  <h2 class="text-4xl font-bold text-gray-800">Our Team</h2>
+  <p class="text-gray-600 max-w-2xl mx-auto mt-4">
+    2 UCSD Students. 36 Hours. 1 Product. 12 Coffees. 9 Protein bars. 
+  </p>
+  <div class="flex flex-wrap justify-center gap-12 mt-12">
+
+    <!-- Team Member 1 -->
+    <div class="bg-white rounded-xl shadow-md p-6 w-72 flex flex-col items-center space-y-4 hover:shadow-lg transition">
+      <img src="/static/team1.jpg" alt="Team Member 1" class="rounded-full w-32 h-32 object-cover">
+      <h3 class="text-xl font-semibold text-gray-800">Mishka Jethwani</h3>
+      <p class="text-gray-500"></p>
+      <a href="https://linkedin.com/in/mishka-jethwani/" target="_blank" 
+   class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition">
+  <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.38-1.12 2.5-2.5 
+        2.5S0 4.88 0 3.5 1.12 1 2.5 1s2.5 1.12 2.5 2.5zM0 8h5V24H0V8zm7.5 0h4.8v2.16h.07c.67-1.27 
+        2.3-2.6 4.73-2.6 5.06 0 6 3.33 6 7.66V24h-5v-7.34c0-1.75-.03-4-2.44-4-2.44 
+        0-2.82 1.9-2.82 3.87V24h-5V8z"/></svg>
+  <span>LinkedIn</span>
+</a>
+
+    </div>
+
+    <!-- Team Member 2 -->
+    <div class="bg-white rounded-xl shadow-md p-6 w-72 flex flex-col items-center space-y-4 hover:shadow-lg transition">
+      <img src="/static/team2.jpg" alt="Team Member 2" class="rounded-full w-32 h-32 object-cover">
+      <h3 class="text-xl font-semibold text-gray-800">Rahul Mistry</h3>
+      <p class="text-gray-500"></p>
+      <a href="https://www.linkedin.com/in/rahul-mistry-599baa260/" target="_blank" 
+   class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition">
+  <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.38-1.12 2.5-2.5 
+2.5S0 4.88 0 3.5 1.12 1 2.5 1s2.5 1.12 2.5 2.5zM0 8h5V24H0V8zm7.5 0h4.8v2.16h.07c.67-1.27 
+2.3-2.6 4.73-2.6 5.06 0 6 3.33 6 7.66V24h-5v-7.34c0-1.75-.03-4-2.44-4-2.44 
+0-2.82 1.9-2.82 3.87V24h-5V8z"/></svg>
+  <span>LinkedIn</span>
+  </a>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-36 px-8 text-center space-y-6 bg-gray-100">
+  <h2 class="text-4xl font-bold text-gray-800">Contact Us</h2>
+  <p class="text-gray-600 max-w-2xl mx-auto mt-4">
+    We would love to have feedback!
+  </p>
+  <a href="mailto:mjethwani@ucsd.edu" class="text-blue-600 underline font-semibold">📧</a>
+</section>
+
+<!-- Footer -->
+<footer class="text-center text-gray-400 text-xs p-4">
+  Built at La Hacks, Powered by Caffeine
+</footer>
+
+</body>
+</html>
