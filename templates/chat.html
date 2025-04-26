@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Chat - Name</title>
+  <title>Chat</title>
 
   <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -26,14 +26,23 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.1);
       overflow-y: auto;
     }
+    .navbar {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col">
 
 <!-- Navbar -->
-<nav class="flex justify-between items-center p-6 backdrop-blur-md bg-white/70 shadow-sm">
-  <div class="text-2xl font-bold text-gray-800">Name</div>
+<nav class="navbar flex justify-between items-center p-6">
+  <!-- Logo -->
+  <a href="/" class="flex items-center space-x-3">
+    <img src="/static/logo.png" alt="Ment2Meet Logo" class="w-20 h-20">
+    <span class="text-2xl font-bold text-gray-800"></span>
+  </a>
 </nav>
 
 <!-- Chat Section -->
@@ -78,8 +87,8 @@
   </section>  
 
 <!-- Footer -->
-<footer class="text-center text-gray-400 text-xs p-4">
-  Built with ❤️ by Name Team
+<footer class="text-center text-gray-400 text-xs p-4 mt-12">
+  Built with ❤️ by Ment2Meet Team
 </footer>
 
 <!-- Final Scripts -->

@@ -1,31 +1,39 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, session
 import requests
 import json
+from flask_sqlalchemy import SQLAlchemy
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.secret_key = "supersecretkey"
 
-# ⚡ Replace with your real ASI API key
 ASI_API_KEY = "sk_5e8dbfb687c84cc0b32ca1ef309e329d6e49084d44aa4c61a9a1bc5fbd92064f"
 
-# ⚡ SERVER-SIDE MEMORY
-chat_state = {
-    "is_mentor": None,
-    "full_name": None,
-    "display_name": None,
-    "gender": None,
-    "education": None,
-    "field": None,
-    "career_stage": None,
-    "resume": None,
-    "bio": None,
-    "personality": None,
-    "hobbies": None,
-    "tone": None,
-    "messages": []
-}
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mentors.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# ✅ GLOBAL LIST to store mentors
-mentors = []
+db = SQLAlchemy(app)
+
+# Updated Mentor model
+class Mentor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(100))
+    display_name = db.Column(db.String(100))
+    institution = db.Column(db.String(100))
+    gender = db.Column(db.String(50))
+    education = db.Column(db.String(100))
+    field = db.Column(db.String(100))
+    career_stage = db.Column(db.String(100))
+    bio = db.Column(db.String(500))
+    resume = db.Column(db.Text)
+    personality = db.Column(db.String(100))
+    hobbies = db.Column(db.Text)
+    tone = db.Column(db.String(100))
+    mascot = db.Column(db.String(100))
+
+with app.app_context():
+    db.create_all()
 
 # ---------------- LANDING PAGE ---------------- #
 @app.route('/')
@@ -36,81 +44,71 @@ def landing():
 @app.route('/questionnaire', methods=['GET', 'POST'])
 def questionnaire():
     if request.method == 'POST':
-        # Save user input to chat_state
-        chat_state["is_mentor"] = request.form['is_mentor']
-        chat_state["full_name"] = request.form['full_name']
-        chat_state["display_name"] = request.form['display_name']
-        chat_state["gender"] = request.form['gender']
-        chat_state["education"] = request.form['education']
-        chat_state["field"] = request.form['field']
-        chat_state["career_stage"] = request.form['career_stage']
-        chat_state["resume"] = request.form['resume']
-        chat_state["bio"] = request.form['bio']
-        chat_state["personality"] = request.form['personality']
-        chat_state["hobbies"] = request.form['hobbies']
-        chat_state["tone"] = request.form['tone']
-        chat_state["messages"] = []
-
-        # ✅ Save new mentor to list
-        new_mentor = {
-            "id": len(mentors) + 1,
-            "name": chat_state["display_name"],
-            "field": chat_state["field"],
-            "bio": chat_state["bio"],
-            "resume": chat_state["resume"],
-            "personality": chat_state["personality"],
-            "hobbies": chat_state["hobbies"],
-            "tone": chat_state["tone"]
-        }
-        mentors.append(new_mentor)
+        new_mentor = Mentor(
+            full_name=request.form['full_name'],
+            display_name=request.form['display_name'],
+            institution=request.form['institution'],
+            gender=request.form['gender'],
+            education=request.form['education'],
+            field=request.form['field'],
+            career_stage=request.form['career_stage'],
+            bio=request.form['bio'],
+            resume=request.form['resume'],
+            personality=request.form['personality'],
+            hobbies=request.form['hobbies'],
+            tone=request.form['tone'],
+            mascot=request.form['mascot']
+        )
+        db.session.add(new_mentor)
+        db.session.commit()
 
         return redirect('/network')
 
     return render_template('questionnaire.html')
 
 # ---------------- CHAT PAGE ---------------- #
-@app.route('/chat', methods=['GET', 'POST'])
-def chat():
-    if not chat_state["full_name"] or not chat_state["resume"]:
-        return redirect('/questionnaire')
+@app.route('/chat/<int:mentor_id>', methods=['GET', 'POST'])
+def chat(mentor_id):
+    mentor = Mentor.query.get_or_404(mentor_id)
 
-    response_text = None
+    if str(mentor_id) not in session:
+        session[str(mentor_id)] = []
 
-    # ✅ ONLY 1 SYSTEM MESSAGE on new session
-    if len(chat_state["messages"]) == 0:
-        intro_message = {
+        # First system prompt
+        intro_prompt = {
             "role": "user",
             "content": f"""
-You are an AI mentor named {chat_state['display_name']}.
-- Field: {chat_state['field']}
-- Bio: {chat_state['bio']}
-- Personality: {chat_state['personality']}
-- Tone: {chat_state['tone']}
-- Hobbies: {chat_state['hobbies']}
-- Resume: {chat_state['resume']}
-
-✅ Start by introducing yourself in ONLY ONE short paragraph in a friendly tone.
-❌ DO NOT repeat your introduction.
-❌ DO NOT mention your name twice.
-✅ After your single intro, wait for the user's questions.
-"""
+            You are a personalized AI mentor:
+            - Name: {mentor.display_name}
+            - Field: {mentor.field}
+            - Bio: {mentor.bio}
+            - Personality: {mentor.personality}
+            - Hobbies: {mentor.hobbies}
+            Speak with a {mentor.tone} tone.
+            NEVER share private information. Respond like a real mentor version of {mentor.display_name}. Do not share any informatio about yourself, unless asked to do so. Do not give an output in Markdown. Talk normally. Do not talk about the tone you are using. 
+            """
         }
-        chat_state["messages"].append(intro_message)
+        session[str(mentor_id)].append(intro_prompt)
+
+        # Friendly welcome message
+        welcome_message = {
+            "role": "assistant",
+            "content": f"Hey there! 👋 I'm {mentor.display_name} from {mentor.institution}. I'm your AI mentor, excited to help you with anything you need!"
+        }
+        session[str(mentor_id)].append(welcome_message)
 
     if request.method == 'POST':
         user_message = request.form['message']
-        chat_state["messages"].append({"role": "user", "content": user_message})
+        session[str(mentor_id)].append({"role": "user", "content": user_message})
 
         url = "https://api.asi1.ai/v1/chat/completions"
-
         payload = {
             "model": "asi1-mini",
-            "messages": chat_state["messages"],
+            "messages": session[str(mentor_id)],
             "temperature": 0.7,
             "stream": False,
             "max_tokens": 500
         }
-
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -121,25 +119,22 @@ You are an AI mentor named {chat_state['display_name']}.
         data = response.json()
 
         assistant_reply = data.get('choices', [{}])[0].get('message', {}).get('content', 'No response')
+        session[str(mentor_id)].append({"role": "assistant", "content": assistant_reply})
 
-        chat_state["messages"].append({"role": "assistant", "content": assistant_reply})
-
-        response_text = assistant_reply
-
-    return render_template('chat.html', messages=chat_state["messages"], response_text=response_text, name=chat_state["display_name"])
+    return render_template('chat.html', messages=session[str(mentor_id)], name=mentor.display_name)
 
 # ---------------- RESET PAGE ---------------- #
-@app.route('/reset')
-def reset():
-    for key in chat_state.keys():
-        chat_state[key] = None if key != "messages" else []
-    return redirect('/questionnaire')
+@app.route('/reset/<int:mentor_id>')
+def reset_mentor_chat(mentor_id):
+    session.pop(str(mentor_id), None)
+    return redirect(f'/chat/{mentor_id}')
 
 # ---------------- NETWORK PAGE ---------------- #
 @app.route('/network')
 def network():
+    mentors = Mentor.query.all()
     return render_template('network.html', mentors=mentors)
 
 # ---------------- MAIN ---------------- #
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
