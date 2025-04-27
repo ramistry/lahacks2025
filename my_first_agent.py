@@ -41,7 +41,7 @@ async def handle_query(ctx: Context, sender: str, query: QueryRequest):
                 data = await resp.json()
 
                 results = data.get("results", [])
-                total = data.get("total", 0)
+                total = data.get("total", 2)
 
                 ctx.logger.info(f"Sending {total} results back to {sender}")
                 await ctx.send(sender, QueryResponse(results=results, total=total, query=query.query))
