@@ -14,12 +14,78 @@
       border-radius: 20px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
+    .btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .results {
+      margin-top: 20px;
+    }
+    .result-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+    /* Mentor Cards */
+    .mentor-card {
+      width: 320px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
+      margin: 10px;
+      transition: transform 0.3s ease;
+    }
+    .mentor-card:hover {
+      transform: scale(1.05);
+    }
+    .mentor-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+    }
+    .mentor-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+    }
+    .mentor-button {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      padding: 10px 15px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .mentor-button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col">      
+<body class="min-h-screen flex flex-col">
 
-<!-- Meet Mentors -->
+<!-- Meet Mentors Section -->
 <section class="flex flex-col items-center pt-36 p-8 space-y-12">
   <h1 class="text-5xl font-bold text-gray-800 animate__animated animate__fadeInDown">Meet Your Mentors 🤝</h1>
   <p class="text-gray-600 max-w-2xl text-center text-lg animate__animated animate__fadeIn animate__delay-1s">
@@ -29,13 +95,13 @@
   <div class="flex flex-wrap justify-center gap-10 mt-10">
 
     {% for mentor in mentors %}
-      <div class="glass p-6 w-72 flex flex-col items-center space-y-4 hover:shadow-2xl transition animate__animated animate__fadeInUp">
+      <div class="mentor-card">
         
         <!-- Mascot Image -->
-        <img src="/static/{{ mentor.mascot|lower|replace(' ', '-') }}.png" alt="{{ mentor.mascot }}" class="w-20 h-20 rounded-full shadow-md">
+        <img src="/static/{{ mentor.mascot|lower|replace(' ', '-') }}.png" alt="{{ mentor.mascot }}" class="mentor-image">
 
         <!-- Display Name -->
-        <h2 class="text-2xl font-semibold text-gray-800">{{ mentor.display_name }}</h2>
+        <h2 class="mentor-name">{{ mentor.display_name }}</h2>
 
         <!-- Institution -->
         <p class="text-gray-500 text-sm">{{ mentor.institution }}</p>
@@ -47,7 +113,7 @@
         <p class="text-gray-500 text-xs text-center">{{ mentor.bio }}</p>
 
         <!-- Chat Button -->
-        <a href="/chat/{{ mentor.id }}" class="mt-4 bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95">
+        <a href="/chat/{{ mentor.id }}" class="mentor-button">
           Chat with {{ mentor.display_name }}
         </a>
 
@@ -57,8 +123,34 @@
     {% if not mentors %}
       <p class="text-gray-600 text-lg mt-10">No mentors available yet. Be the first to register!</p>
     {% endif %}
-
   </div>
+</section>
+
+<!-- AI Query Search Section (App 1) -->
+<section class="flex flex-col items-center pt-12 p-8 space-y-8 bg-gray-100">
+  <h2 class="text-3xl font-bold text-gray-800">AI Query Search 🔍</h2>
+  <p class="text-gray-600 max-w-2xl text-center text-lg">Want to search for people working on specific topics? Use our AI-powered search below!</p>
+  
+  <form method="POST" class="flex flex-col items-center space-y-4 w-full max-w-lg">
+    <input type="text" name="query" placeholder="Enter your search query..." class="input-field" required>
+    <button type="submit" class="btn">Search</button>
+  </form>
+
+  {% if results %}
+    <div class="results mt-10">
+      <h3 class="text-2xl font-semibold text-gray-800">Results for: "{{ query }}"</h3>
+      <p class="text-gray-600">Total Results: {{ total }}</p>
+      <div class="space-y-4 mt-6">
+        {% for result in results %}
+          <div class="result-item p-4 bg-white border rounded shadow-sm">
+            <p class="text-gray-700">{{ result }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% elif query %}
+    <p class="text-gray-600 mt-4">No results found for "{{ query }}". Please try again.</p>
+  {% endif %}
 </section>
 
 <!-- Footer -->
