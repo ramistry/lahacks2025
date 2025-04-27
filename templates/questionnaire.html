@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ment2Meet - Questionnaire</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(to right, #ece9e6, #ffffff); }
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+<div class="flex-1 flex flex-col justify-center items-center p-6">
+  <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl w-full animate__animated animate__fadeIn">
+    <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">🚀 Create Your Mentor Profile</h1>
+
+    <div id="progress" class="text-center text-gray-500 mb-6">Step 1 of 6</div>
+
+    <form id="questionnaireForm" method="POST" action="/questionnaire" enctype="multipart/form-data" class="space-y-6">
+
+      <!-- Step 1 -->
+      <div class="step">
+        <label class="block font-semibold">Your Full Name:</label>
+        <input type="text" name="full_name" class="w-full p-3 border rounded-lg" required>
+
+        <label class="block font-semibold mt-4">Preferred Display Name (Nickname):</label>
+        <input type="text" name="display_name" class="w-full p-3 border rounded-lg" required>
+
+        <label class="block font-semibold mt-4">Institution (Company / University / School):</label>
+        <input type="text" name="institution" class="w-full p-3 border rounded-lg" required>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step hidden">
+        <label class="block font-semibold">Gender:</label>
+        <select name="gender" class="w-full p-3 border rounded-lg mt-2" required>
+          <option value="">Select...</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Non-binary</option>
+          <option>Prefer not to say</option>
+        </select>
+
+        <label class="block font-semibold mt-4">Education Level:</label>
+        <select name="education" class="w-full p-3 border rounded-lg mt-2" required>
+          <option value="">Select...</option>
+          <option>High School</option>
+          <option>Bachelor's</option>
+          <option>Master's</option>
+          <option>PhD</option>
+          <option>Other</option>
+        </select>
+
+        <label class="block font-semibold mt-4">Field/Industry:</label>
+        <select name="field" class="w-full p-3 border rounded-lg mt-2" required>
+          <option value="">Select...</option>
+          <option>Engineering</option>
+          <option>Business</option>
+          <option>Medicine</option>
+          <option>Law</option>
+          <option>Creative Arts</option>
+          <option>Computer Science</option>
+          <option>Finance</option>
+          <option>Research</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step hidden">
+        <label class="block font-semibold">Career Stage:</label>
+        <select name="career_stage" class="w-full p-3 border rounded-lg mt-2" required>
+          <option value="">Select...</option>
+          <option>Student</option>
+          <option>Early Career</option>
+          <option>Senior</option>
+          <option>Executive</option>
+        </select>
+
+        <label class="block font-semibold mt-4">Upload/Paste your Resume:</label>
+        <textarea name="resume" rows="5" class="w-full p-3 border rounded-lg" required></textarea>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step hidden">
+        <label class="block font-semibold">Short Personality Bio:</label>
+        <textarea name="bio" rows="3" class="w-full p-3 border rounded-lg" required></textarea>
+
+        <label class="block font-semibold mt-4">Are you an Introvert or Extrovert?</label>
+        <div class="mt-2 space-x-6">
+          <label><input type="radio" name="personality" value="Introvert" required> Introvert</label>
+          <label><input type="radio" name="personality" value="Extrovert" required> Extrovert</label>
+        </div>
+
+        <label class="block font-semibold mt-4">Hobbies/Interests:</label>
+        <textarea name="hobbies" rows="3" class="w-full p-3 border rounded-lg" required></textarea>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step hidden">
+        <label class="block font-semibold">Preferred Tone:</label>
+        <select name="tone" class="w-full p-3 border rounded-lg mt-2" required>
+          <option value="">Select...</option>
+          <option>Friendly</option>
+          <option>Formal</option>
+          <option>Mentor-like</option>
+          <option>Confident</option>
+          <option>Supportive</option>
+        </select>
+      </div>
+
+      <!-- Step 6 (New Mascot Step) -->
+       <!-- Mascot Selection Step -->
+<!-- Step 6 (Mascot Selection Updated) -->
+<div class="step hidden">
+  <label class="block font-semibold text-center">Choose Your Go-To for Coffee Chats ☕</label>
+  <div class="grid grid-cols-2 gap-4 mt-4">
+
+    <!-- Latte -->
+    <label class="cursor-pointer flex flex-col items-center group">
+      <input type="radio" name="mascot" value="Latte" class="hidden peer" required>
+      <img src="/static/latte.png" alt="Latte" class="rounded-lg mt-2 border-4 border-transparent peer-checked:border-yellow-400">
+      <div class="text-center font-semibold mt-2">Latte</div>
+    </label>
+
+    <!-- Espresso -->
+    <label class="cursor-pointer flex flex-col items-center group">
+      <input type="radio" name="mascot" value="Espresso" class="hidden peer" required>
+      <img src="/static/espresso.png" alt="Espresso" class="rounded-lg mt-2 border-4 border-transparent peer-checked:border-yellow-400">
+      <div class="text-center font-semibold mt-2">Espresso</div>
+    </label>
+
+    <!-- Matcha -->
+    <label class="cursor-pointer flex flex-col items-center group">
+      <input type="radio" name="mascot" value="Matcha" class="hidden peer" required>
+      <img src="/static/matcha.png" alt="Matcha" class="rounded-lg mt-2 border-4 border-transparent peer-checked:border-yellow-400">
+      <div class="text-center font-semibold mt-2">Matcha</div>
+    </label>
+
+    <!-- Chai Tea -->
+    <label class="cursor-pointer flex flex-col items-center group">
+      <input type="radio" name="mascot" value="Chai Tea" class="hidden peer" required>
+      <img src="/static/chai-latte.png" alt="Chai Tea" class="rounded-lg mt-2 border-4 border-transparent peer-checked:border-yellow-400">
+      <div class="text-center font-semibold mt-2">Chai Tea</div>
+    </label>
+
+    <!-- Cold Brew -->
+    <label class="cursor-pointer flex flex-col items-center group">
+      <input type="radio" name="mascot" value="Cold Brew" class="hidden peer" required>
+      <img src="/static/cold-brew.png" alt="Cold Brew" class="rounded-lg mt-2 border-4 border-transparent peer-checked:border-yellow-400">
+      <div class="text-center font-semibold mt-2">Cold Brew</div>
+    </label>
+
+  </div>
+
+</div>
+       <!-- Buttons -->
+      <div class="flex justify-between pt-8">
+        <button type="button" id="prevBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg" onclick="nextPrev(-1)">Back</button>
+        <button type="button" id="nextBtn" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg" onclick="nextPrev(1)">Next</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- JavaScript for Wizard -->
+<script>
+let currentStep = 0;
+const steps = document.querySelectorAll(".step");
+const progress = document.getElementById("progress");
+
+showStep(currentStep);
+
+function showStep(n) {
+  steps.forEach((step, idx) => {
+    step.style.display = (idx === n) ? "block" : "none";
+  });
+  progress.innerHTML = "Step " + (n + 1) + " of " + steps.length;
+  document.getElementById("prevBtn").style.display = (n === 0) ? "none" : "inline";
+  document.getElementById("nextBtn").innerHTML = (n === steps.length - 1) ? "Submit" : "Next";
+}
+
+function nextPrev(n) {
+  if (n == 1 && !validateForm()) return false;
+  currentStep += n;
+  if (currentStep >= steps.length) {
+    document.getElementById("questionnaireForm").submit();
+    return false;
+  }
+  showStep(currentStep);
+}
+
+function validateForm() {
+  const inputs = steps[currentStep].querySelectorAll("input, select, textarea");
+  for (let input of inputs) {
+    if (input.hasAttribute("required") && input.value == "") {
+      input.focus();
+      return false;
+    }
+  }
+  return true;
+}
+</script>
+
+</body>
+</html>

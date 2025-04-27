@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Ment2Meet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      overflow-x: hidden;
+      position: relative;
+    }
+    html { scroll-behavior: smooth; }
+
+    #background-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -10;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen relative">
+
+<!-- Custom Gemini-like Canvas -->
+<canvas id="background-canvas"></canvas>
+
+<nav class="flex justify-evenly items-center px-10 py-5 bg-white/80 backdrop-blur-md shadow-md fixed w-full z-10">
+    <!-- Everything spaced evenly -->
+    <a href="/">
+      <img src="/static/logo.png" alt="Ment2Meet Logo" class="h-20">
+    </a>
+    <a href="#home" class="hover:text-gray-900 font-semibold text-gray-700 text-lg transition">Home</a>
+    <a href="#about" class="hover:text-gray-900 font-semibold text-gray-700 text-lg transition">About</a>
+    <a href="#team" class="hover:text-gray-900 font-semibold text-gray-700 text-lg transition">Team</a>
+    <a href="#contact" class="hover:text-gray-900 font-semibold text-gray-700 text-lg transition">Contact</a>
+  </nav>
+  
+
+<!-- Hero Section -->
+<section id="home" class="flex flex-col justify-center items-center text-center p-8 space-y-6" style="min-height: 100vh; padding-top: 140px;">
+  <h1 class="text-6xl font-extrabold animate__animated animate__fadeInDown">Ment2Meet</h1>
+  <p class="text-gray-600 max-w-xl mt-6 animate__animated animate__fadeIn animate__delay-1s text-2xl">
+    Networking made less nerve-wreaking.
+  </p>
+  <div class="flex flex-col md:flex-row gap-6 justify-center mt-8">
+    <a href="/questionnaire" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 active:scale-95">
+      Register Yourself as a Mentor
+    </a>
+    <a href="/network" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 active:scale-95">
+      Start Networking
+    </a>
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-36 px-8 text-center space-y-6 bg-gray-100 relative">
+    <h2 class="text-4xl font-bold text-gray-800">About Ment2Meet</h2>
+    <p class="text-gray-600 max-w-2xl mx-auto mt-4 text-lg">
+      Ment2Meet transforms the networking experience by letting users interact with AI-powered versions of real mentors. 
+      We know how nerve-wracking it can be to reach out with embarrassing questions, fear awkward conversations, or worry about getting ghosted. 
+      Our platform removes that anxiety by offering you a safe, judgment-free environment to ask anything, learn freely, and build confidence — 
+      before even speaking to a real mentor. <br><br>
+      Meet, practice, connect — Ment2Meet makes it easier and more human.
+    </p>
+  </section>  
+
+<!-- Team Section -->
+<section id="team" class="py-36 px-8 text-center space-y-6 relative">
+    <h2 class="text-4xl font-bold text-gray-800">Our Team</h2>
+    <p class="text-gray-600 max-w-2xl mx-auto mt-4">
+      2 UCSD Students. 36 Hours. 12 Coffees. 9 Protein bars. 1 Product.
+    </p>
+  
+    <div class="flex flex-wrap justify-center gap-12 mt-12">
+      
+      <!-- Mishka Jethwani -->
+      <div class="bg-white rounded-xl shadow-md p-6 w-72 flex flex-col items-center space-y-4 hover:shadow-lg transition">
+        <img src="/static/team1.jpeg" alt="Mishka Jethwani" class="rounded-full w-32 h-32 object-cover">
+        <h3 class="text-xl font-semibold text-gray-800">Mishka Jethwani</h3>
+        <p class="text-gray-500"></p>
+        <a href="https://linkedin.com/in/mishka-jethwani/" target="_blank" class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.38-1.12 2.5-2.5 
+            2.5S0 4.88 0 3.5 1.12 1 2.5 1s2.5 1.12 2.5 2.5zM0 8h5V24H0V8zm7.5 
+            0h4.8v2.16h.07c.67-1.27 2.3-2.6 4.73-2.6 5.06 0 6 3.33 
+            6 7.66V24h-5v-7.34c0-1.75-.03-4-2.44-4-2.44 
+            0-2.82 1.9-2.82 3.87V24h-5V8z"/></svg>
+          <span>LinkedIn</span>
+        </a>
+      </div>
+  
+      <!-- Rahul Mistry -->
+      <div class="bg-white rounded-xl shadow-md p-6 w-72 flex flex-col items-center space-y-4 hover:shadow-lg transition">
+        <img src="/static/team2.jpeg" alt="Rahul Mistry" class="rounded-full w-32 h-32 object-cover">
+        <h3 class="text-xl font-semibold text-gray-800">Rahul Mistry</h3>
+        <p class="text-gray-500"></p>
+        <a href="https://www.linkedin.com/in/rahul-mistry-599baa260/" target="_blank" class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.38-1.12 2.5-2.5 
+            2.5S0 4.88 0 3.5 1.12 1 2.5 1s2.5 1.12 2.5 2.5zM0 8h5V24H0V8zm7.5 
+            0h4.8v2.16h.07c.67-1.27 2.3-2.6 4.73-2.6 5.06 0 6 3.33 
+            6 7.66V24h-5v-7.34c0-1.75-.03-4-2.44-4-2.44 
+            0-2.82 1.9-2.82 3.87V24h-5V8z"/></svg>
+          <span>LinkedIn</span>
+        </a>
+      </div>
+  
+    </div>
+  </section>
+  
+
+<!-- Contact Section -->
+<section id="contact" class="py-36 px-8 text-center space-y-6 bg-gray-100 relative">
+  <h2 class="text-4xl font-bold text-gray-800">Contact Us</h2>
+  <p class="text-gray-600 max-w-2xl mx-auto mt-4">
+    We would love to have feedback!
+  </p>
+  <a href="mailto:mjethwani@ucsd.edu" class="text-blue-600 underline font-semibold">📧</a>
+</section>
+
+<!-- Footer -->
+<footer class="text-center text-gray-400 text-xs p-4">
+  Built at La Hacks, Powered by Caffeine
+</footer>
+
+<!-- Gemini-like Script -->
+<script>
+    const canvas = document.getElementById('background-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    
+    // Nice manually placed particles (good spacing, diff sizes)
+    const particles = [
+      { x: width * 0.2, y: height * 0.3, size: 180, color: '#f5f5f5', vx: 0.05, vy: 0.03 },
+      { x: width * 0.7, y: height * 0.2, size: 100, color: '#e0e0e0', vx: -0.04, vy: 0.02 },
+      { x: width * 0.4, y: height * 0.7, size: 140, color: '#d6d3d1', vx: 0.03, vy: -0.05 },
+      { x: width * 0.8, y: height * 0.75, size: 220, color: '#f5f5f5', vx: -0.02, vy: 0.04 },
+      { x: width * 0.6, y: height * 0.5, size: 80, color: '#e0e0e0', vx: 0.02, vy: 0.03 }
+    ];
+    
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+    
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = 0.4;
+    
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+        ctx.globalAlpha = 1.0;
+    
+        // Gentle drift movement
+        p.x += p.vx;
+        p.y += p.vy;
+    
+        // Bounce softly off edges
+        if (p.x < -p.size || p.x > width + p.size) p.vx *= -1;
+        if (p.y < -p.size || p.y > height + p.size) p.vy *= -1;
+      });
+    
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+</script>
+
+</body>
+</html>
