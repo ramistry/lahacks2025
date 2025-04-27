@@ -34,8 +34,11 @@ class Mentor(db.Model):
     tone = db.Column(db.String(100))
     mascot = db.Column(db.String(100))
 
+
 with app.app_context():
     db.create_all()
+    
+
 
 # ---------------- LANDING PAGE ---------------- #
 @app.route('/')
@@ -70,8 +73,8 @@ def questionnaire():
 
 import random
 
-# Global variable to store mentors in memory
-MENTORS = []
+
+import aiohttp
 
 async def send_query_to_linkd(query):
     try:
@@ -91,7 +94,6 @@ async def send_query_to_linkd(query):
                 total = data.get("total", 0)
 
                 # Parse the results
-                
                 parsed_results = []
                 for result in results:
                     profile = result.get("profile", {})
@@ -101,23 +103,41 @@ async def send_query_to_linkd(query):
                     selected_image = random.choice(['chai-latte.png', 'cold-brew.png', 'espresso.png', 'latte.png', 'matcha.png'])
                     profile_picture_url = f"/static/{selected_image}"
 
-                    parsed_results.append({
+                    # Prepare parsed result for display
+                    parsed_result = {
+                        "all": profile,
                         "display_name": profile.get("name", "No name"),
                         "institution": experience.get("company_name", "No company"),
                         "school": education.get("school_name", "No school"),
                         "field": profile.get("headline", "No field"),
                         "profile_picture_url": profile_picture_url
-                    })
-                
-                # Update the global mentors list (always keep 4)
-                global MENTORS
-                MENTORS = results
-                print(MENTORS)
+                    }
 
+                    parsed_results.append(parsed_result)
+                    
+                    # Add mentor data to the database
+                    new_mentor = Mentor(
+                        full_name=profile.get("name", "No name"),
+                        display_name=profile.get("name", "No name"),
+                        institution=experience.get("company_name", "No company"),
+                        field=profile.get("title", "No field"),
+                        bio=profile.get("experience", " "),
+                        personality=profile.get("description", "Unknown"),
+                        hobbies=profile.get("hobbies", "Unknown"),
+                        tone=profile.get("tone", "Friendly"),
+                        mascot=profile_picture_url 
+                    )
+
+                    # Save the new mentor to the database
+                    db.session.add(new_mentor)
+                    db.session.commit()
+
+                # Return the parsed results and the total count
                 return parsed_results, total
     except Exception as e:
         print(f"Error fetching mentor data: {e}")
         return [], 0
+
     
 # Routes for the Linkd Search functionality (App 1)
 @app.route("/network", methods=["GET", "POST"])
@@ -130,49 +150,47 @@ def index():
         return render_template("network.html", query=query, results=results, total=total, mentors=Mentor.query.all())
     return render_template("network.html", query=None, results=None, total=None, mentors=Mentor.query.all())
 
-@app.route('/chat/<int:index>', methods=['GET', 'POST'])
-def chat(index):
-    # Fetch the mentor data from the global MENTORS list using the index
-    mentor = MENTORS[index] if 0 <= index < len(MENTORS) else None
 
-    if not mentor:
-        return "Mentor not found", 404  # Error if mentor isn't found
 
-    if str(index) not in session:
-        session[str(index)] = []
+# ---------------- CHAT PAGE ---------------- #
+@app.route('/chat/<int:mentor_id>', methods=['GET', 'POST'])
+def chat(mentor_id):
+    mentor = Mentor.query.get_or_404(mentor_id)
 
-        # First system prompt using the mentor details from the MENTORS list
+    if str(mentor_id) not in session:
+        session[str(mentor_id)] = []
+
+        # First system prompt
         intro_prompt = {
             "role": "user",
             "content": f"""
             You are a personalized AI mentor:
-            - Name: {mentor['profile'].get('name', 'No name')}
-            - Field: {mentor['profile'].get('headline', 'No field')}
-            - Bio: {mentor.get('bio', 'No bio')}
-            - Personality: {mentor.get('personality', 'No personality')}
-            - Hobbies: {mentor.get('hobbies', 'No hobbies')}
-            Speak with a {mentor.get('tone', 'neutral')} tone.
-            NEVER share private information. Respond like a real mentor version of {mentor['profile'].get('name', 'No name')}. Do not share any information about yourself, unless asked to do so. Do not give an output in Markdown. Talk normally. Do not talk about the tone you are using. 
+            - Name: {mentor.display_name}
+            - Field: {mentor.field}
+            - Bio: {mentor.bio}
+            - Personality: {mentor.personality}
+            - Hobbies: {mentor.hobbies}
+            Speak with a {mentor.tone} tone.
+            NEVER share private information. Respond like a real mentor version of {mentor.display_name}. Do not share any information about yourself, unless asked to do so. Do not give an output in Markdown. Talk normally. Do not talk about the tone you are using. 
             """
         }
-        session[str(index)].append(intro_prompt)
+        session[str(mentor_id)].append(intro_prompt)
 
         # Friendly welcome message
         welcome_message = {
             "role": "assistant",
-            "content": f"Hey there! 👋 I'm {mentor['profile'].get('name', 'No name')} from {mentor.get('institution', 'No institution')}. I'm your AI mentor, excited to help you with anything you need!"
+            "content": f"Hey there! 👋 I'm {mentor.display_name} from {mentor.institution}. I'm your AI mentor, excited to help you with anything you need!"
         }
-        session[str(index)].append(welcome_message)
+        session[str(mentor_id)].append(welcome_message)
 
     if request.method == 'POST':
         user_message = request.form['message']
-        session[str(index)].append({"role": "user", "content": user_message})
+        session[str(mentor_id)].append({"role": "user", "content": user_message})
 
-        # Prepare payload for the AI request
         url = "https://api.asi1.ai/v1/chat/completions"
         payload = {
             "model": "asi1-mini",
-            "messages": session[str(index)],
+            "messages": session[str(mentor_id)],
             "temperature": 0.7,
             "stream": False,
             "max_tokens": 500
@@ -187,10 +205,9 @@ def chat(index):
         data = response.json()
 
         assistant_reply = data.get('choices', [{}])[0].get('message', {}).get('content', 'No response')
-        session[str(index)].append({"role": "assistant", "content": assistant_reply})
+        session[str(mentor_id)].append({"role": "assistant", "content": assistant_reply})
 
-    return render_template('chat.html', messages=session[str(index)], name=mentor['profile'].get('name', 'No name'))
-
+    return render_template('chat.html', messages=session[str(mentor_id)], name=mentor.display_name)
 
 # ---------------- RESET PAGE ---------------- #
 @app.route('/reset/<int:mentor_id>')

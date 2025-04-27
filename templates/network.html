@@ -33,7 +33,7 @@
   <div class="flex flex-wrap justify-center gap-10 mt-10">
     {% for mentor in mentors %}
       <div class="mentor-card">
-        <img src="/static/{{ mentor.mascot|lower|replace(' ', '-') }}.png" alt="{{ mentor.mascot }}" class="mentor-image">
+        <img src="/static/"+{{ mentor.mascot }}> </img>
         <h2 class="mentor-name">{{ mentor.display_name }}</h2>
         <p class="mentor-info">{{ mentor.institution }}</p>
         <p class="mentor-info">{{ mentor.field }}</p>
@@ -66,13 +66,16 @@
           <p class="mentor-info">{{ result.institution }}</p>
           <p class="mentor-info">{{ result.field }}</p>
           <p class="mentor-info">{{ result.bio }}</p>
-          <a href="#" class="mentor-button">Chat with {{ result.display_name }}</a>
+          <!-- Modify this link to route to /chat/linkd/{{ result.display_name }} -->
+            Chat with {{ result.display_name }}
+          </a>
         </div>
       {% endfor %}
     </div>
-  {% elif query %}
+{% elif query %}
     <p>No results found for "{{ query }}". Try again!</p>
-  {% endif %}
+{% endif %}
+
 </section>
 
 </body>
