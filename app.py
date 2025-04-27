@@ -9,6 +9,10 @@ import aiohttp
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
+GEMINI_API_KEY = "AIzaSyDCQeFRAGYpWNS2FDTJeuDoxCNRfsDl8gU"  # Replace with your actual API key
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+
+
 ASI_API_KEY = "sk_5e8dbfb687c84cc0b32ca1ef309e329d6e49084d44aa4c61a9a1bc5fbd92064f"
 
 
@@ -70,6 +74,107 @@ def questionnaire():
 
     return render_template('questionnaire.html')
 
+# @app.route('/generate_pathway/<int:mentor_id>', methods=['GET'])
+# def generate_pathway(mentor_id):
+#     mentor = Mentor.query.get_or_404(mentor_id)  # This fetches the mentor by their ID
+
+#     profile_data = {
+#         'name': mentor.display_name,
+#         'headline': mentor.field,
+#         'title': mentor.field,  # Using 'field' here as 'title' can be stored in a different column if needed
+#         'company': mentor.institution,  # Institution holds the company name
+#         'education': mentor.education if mentor.education else "No education available"
+#     }
+
+#     # Generate the learning pathway using the Gemini API
+#     pathway = asyncio.run(generate_learning_pathway(profile_data))
+
+#     return render_template('pathway.html', pathway=pathway, mentor_name=mentor.display_name)
+@app.route('/generate_pathway_by_name/<string:mentor_name>', methods=['GET'])
+def generate_pathway_by_name(mentor_name):
+    mentor = Mentor.query.filter_by(display_name=mentor_name).first()
+
+    if mentor is None:
+        return "Mentor not found", 404  # Return an error message if mentor is not found
+
+    profile_data = {
+        'name': mentor.display_name,
+        'headline': mentor.field,
+        'title': mentor.field,  # You can use 'field' for 'title' as the information about their role is saved here
+        'company': mentor.institution,  # Institution will hold the company name
+        'education': mentor.education if mentor.education else "No education available"
+    }
+    pathway = asyncio.run(generate_learning_pathway(profile_data))
+    
+    return render_template('pathway.html', pathway=pathway, mentor_name=mentor.display_name)
+
+
+
+# ---------------- GENERATE LEARNING PATHWAY ---------------- #
+# async def generate_learning_pathway(profile):
+#     prompt = (
+#         f"Create a detailed, specific learning pathway for the following individual. "
+#         f"Include concrete steps and recommended resources, and make sure the points are complete and actionable. "
+#         f"Research and infer information about the specific role and company when necessary.\n\n"
+#         f"Name: {profile['name']}\n"
+#         f"Role: {profile['title']}\n"  # Specify role, e.g., 'Software Engineer at Meta'
+#         f"Company: {profile['company']}\n"
+#         f"Education: {profile['education']}\n\n"
+#         f"Steps should include: Tech stack for their role, relevant skills, practical projects, resources (like online courses, tutorials), and any tools specific to the company. "
+#         f"Don't include any incomplete or vague points. Focus on actionable, specific skills related to their role.\n\n"
+#         f"Example response format: [Phase] - [Goal] - [Specific Actionable Steps with Resources] - [Links]."
+#         f"Do not use any `**` or similar markdown syntax."
+#     )
+
+#     headers = {"Content-Type": "application/json"}
+#     params = {"key": GEMINI_API_KEY}
+#     data = {"contents": [{"parts": [{"text": prompt}]}]}
+
+#     async with aiohttp.ClientSession() as session:
+#         async with session.post(GEMINI_API_URL, params=params, headers=headers, json=data) as response:
+#             response_json = await response.json()
+            
+#             steps_text = response_json.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+#             steps = steps_text.strip().split("\n")
+#             steps = [step.strip() for step in steps if step.strip()]
+#             return steps
+
+async def generate_learning_pathway(profile):
+    prompt = (
+        f"Create a detailed, specific learning pathway for the following individual. "
+        f"Include concrete steps and recommended resources, and make sure the points are complete and actionable. "
+        f"Research and infer information about the specific role and company when necessary.\n\n"
+        f"Name: {profile['name']}\n"
+        f"Role: {profile['title']}\n"
+        f"Company: {profile['company']}\n"
+        f"Education: {profile['education']}\n\n"
+        f"Steps should include: Tech stack for their role, relevant skills, practical projects, resources (like online courses, tutorials), and any tools specific to the company. "
+        f"Focus on actionable, specific skills related to their role. Make sure to provide **relevant links** for each step.\n\n"
+        f"Format your response like this:\n"
+        f"[Phase] - [Goal] - [Specific Actionable Steps] - [Links]\n\n"
+        f"After each step, list the links in a separate section, formatted like this:\n"
+        f"Make Resource and "
+        f"Resources: [link1], [link2], [link3] \n\n"
+        f"Do not use any `**` or markdown syntax."
+    )
+
+    headers = {"Content-Type": "application/json"}
+    params = {"key": GEMINI_API_KEY}
+    data = {"contents": [{"parts": [{"text": prompt}]}]}
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(GEMINI_API_URL, params=params, headers=headers, json=data) as response:
+            response_json = await response.json()
+            
+            steps_text = response_json.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+            steps = steps_text.strip().split("\n")
+            steps = [step.strip() for step in steps if step.strip()]
+            return steps
+
+
+        
+# AIzaSyDCQeFRAGYpWNS2FDTJeuDoxCNRfsDl8gU
+
 import random
 
 # ---------------- LINKD SEARCH FUNCTIONALITY ---------------- #
@@ -100,6 +205,7 @@ async def send_query_to_linkd(query):
                     selected_image = random.choice(['chai-latte.png', 'cold-brew.png', 'espresso.png', 'latte.png', 'matcha.png'])
                     profile_picture_url = f"/static/{selected_image}"
 
+                    # Prepare parsed result for display
                     parsed_result = {
                         "all": profile,
                         "display_name": profile.get("name", "No name"),
@@ -110,7 +216,7 @@ async def send_query_to_linkd(query):
                     }
 
                     parsed_results.append(parsed_result)
-
+                    
                     # Add mentor data to the database
                     new_mentor = Mentor(
                         full_name=profile.get("name", "No name"),
@@ -124,15 +230,18 @@ async def send_query_to_linkd(query):
                         mascot=profile_picture_url,
                     )
 
+                    # Save the new mentor to the database
                     db.session.add(new_mentor)
                     db.session.commit()
 
+                # Return the parsed results and the total count
                 return parsed_results, total
     except Exception as e:
         print(f"Error fetching mentor data: {e}")
         return [], 0
 
-# ---------------- NETWORK PAGE ---------------- #
+    
+# Routes for the Linkd Search functionality (App 1)
 @app.route("/network", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -141,7 +250,22 @@ def index():
         asyncio.set_event_loop(loop)
         results, total = loop.run_until_complete(send_query_to_linkd(query))
         return render_template("network.html", query=query, results=results, total=total, mentors=Mentor.query.all())
-    return render_template("network.html", query=None, results=None, total=None, mentors=Mentor.query.all())
+
+
+    mentors = Mentor.query.all()
+    pathway_data = []
+    for mentor in mentors:
+        profile_data = {
+            'name': mentor.display_name,
+            'headline': mentor.field,
+            'title': mentor.field, 
+            'company': mentor.institution,  # Institution will hold the company name
+            'education': mentor.education if mentor.education else "No education available"
+        }
+        pathway = asyncio.run(generate_learning_pathway(profile_data))
+        pathway_data.append({'mentor': mentor, 'pathway': pathway})
+
+    return render_template("network.html", query=None, results=None, total=None, mentors=mentors, pathway_data=pathway_data)
 
 # ---------------- CHAT PAGE ---------------- #
 @app.route('/chat/<int:mentor_id>', methods=['GET', 'POST'])
@@ -196,44 +320,18 @@ def chat(mentor_id):
 
     return render_template('chat.html', messages=session[str(mentor_id)], name=mentor.display_name, mentor=mentor)
 
-# ---------------- RESET PAGE ---------------- #
+
 @app.route('/reset/')
 def reset_mentor_chat():
     session.clear()
     return redirect('/network') 
 
+# ---------------- NETWORK PAGE ---------------- #
+@app.route('/network')
+def network():
+    mentors = Mentor.query.all()
+    return render_template('network.html', mentors=mentors)
 
 
-# ---------------- SEND EMAIL PAGE ---------------- #
-@app.route('/send-email/<int:mentor_id>', methods=['POST'])
-def send_email(mentor_id):
-    mentor = Mentor.query.get_or_404(mentor_id)
-    user_email = request.form['email']  # Get the user's email
-    
-        # Flask-Mail Configuration (ensure to update with your email credentials)
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Use your SMTP server
-    app.config['MAIL_PORT'] = 587  # Use TLS
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USE_SSL'] = False
-    app.config['MAIL_USERNAME'] = user_email  # Your email address
-    app.config['MAIL_PASSWORD'] = 'lahacksyay'  # Your email password
-    app.config['MAIL_DEFAULT_SENDER'] =  mentor.hobbies # Default sender email
-
-    mail = Mail(app)
-
-    subject = f"Connect with {mentor.display_name}"
-    body = f"Hi {mentor.display_name},\n\nI would love to connect with you and learn more about your expertise!" 
-
-    # Send email to the mentor's email
-    msg = Message(subject=subject, recipients=[mentor.hobbies], body=body)
-
-    try:
-        mail.send(msg)
-        return redirect(f'/chat/{mentor_id}')
-    except Exception as e:
-        print(f"Error sending email: {e}")
-        return "We will send the email shortly", 500
-
-# ---------------- MAIN ---------------- #
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

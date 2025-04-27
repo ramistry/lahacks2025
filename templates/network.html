@@ -26,17 +26,25 @@
     <img src="/static/logo.png" alt="Ment2Meet Logo" class="h-20">
   </a>
 
-<!-- Meet Mentors Section -->
 <section class="flex flex-col items-center pt-36 p-8 space-y-12">
   <h1 class="text-5xl font-bold text-gray-800 animate__animated animate__fadeInDown">Meet Your Mentors 🤝</h1>
   <p class="text-gray-600 max-w-2xl text-center text-lg animate__animated animate__fadeIn animate__delay-1s">
     Explore and connect with AI versions of alumni, students, and professionals ready to mentor you!
   </p>
 
+  <div class="mt-4 flex justify-center">
+    <div class="text-center">
+      <input type="text" id="mentor_name" class="input-field" placeholder="Enter mentor's name" required>
+      <button onclick="window.location.href='/generate_pathway_by_name/' + document.getElementById('mentor_name').value" class="btn mt-4">
+        Generate Pathway
+      </button>
+    </div>
+  </div>
+
   <div class="flex flex-wrap justify-center gap-10 mt-10">
     {% for mentor in mentors %}
       <div class="mentor-card">
-        <img src={{mentor.mascot}}
+        <img src="{{ mentor.mascot }}" alt="{{ mentor.display_name }}'s mascot" class="mentor-image">
         <h2 class="mentor-name">{{ mentor.display_name }}</h2>
         <p class="mentor-info">{{ mentor.institution }}</p>
         <p class="mentor-info">{{ mentor.field }}</p>
@@ -47,7 +55,6 @@
   </div>
 </section>
 
-<!-- Linkd Search Section -->
 <section class="flex flex-col items-center pt-12 p-8 space-y-8 bg-white">
   <h2 class="text-3xl font-bold text-gray-800">AI Query Search 🔍</h2>
   <p class="text-gray-600 max-w-2xl text-center text-lg">Want to search for people working on specific topics? Use our AI-powered search below!</p>
@@ -58,10 +65,23 @@
   </form>
 
   {% if results %}
-{% elif query %}
+    <h3 class="text-2xl font-semibold text-gray-800">Results for: "{{ query }}"</h3>
+    <p>Total Results: {{ total }}</p>
+    <div class="flex flex-wrap justify-center gap-10 mt-10">
+      {% for result in results %}
+        <div class="mentor-card">
+          <img src="{{ result.profile_picture_url }}" alt="{{ result.display_name }}'s picture" class="mentor-image">
+          <h2 class="mentor-name">{{ result.display_name }}</h2>
+          <p class="mentor-info">{{ result.institution }}</p>
+          <p class="mentor-info">{{ result.field }}</p>
+          <p class="mentor-info">{{ result.bio }}</p>
+          <a href="#" class="mentor-button">Chat with {{ result.display_name }}</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% elif query %}
     <p>No results found for "{{ query }}". Try again!</p>
-{% endif %}
-
+  {% endif %}
 </section>
 
 </body>

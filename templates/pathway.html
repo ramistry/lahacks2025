@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ mentor_name }}'s Learning Pathway</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 py-10">
+
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-xl animate__animated animate__fadeInUp">
+    <h1 class="text-3xl font-bold text-center text-gray-800">{{ mentor_name }}'s Learning Pathway</h1>
+    <p class="mt-4 text-center text-base text-gray-600">
+      A personalized roadmap for achieving your goals based on your expertise and aspirations.
+    </p>
+
+    <ul class="mt-6 space-y-5">
+      {% for step in pathway %}
+        {% if 'Phase' in step %}
+          <li class="p-6 bg-gray-50 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out text-center">
+            <h2 class="text-2xl font-semibold text-gray-800">{{ step }}</h2>
+          </li>
+        {% else %}
+          <li class="p-6 bg-gray-50 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out text-left text-sm">
+            <h2 class="text-base text-gray-800">{{ step }}</h2>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+
+  </div>
+
+</body>
+</html>
