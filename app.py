@@ -1,9 +1,8 @@
 from flask import Flask, request, render_template, redirect, session
-import requests
-import json
 from flask_sqlalchemy import SQLAlchemy
-import os
-from werkzeug.utils import secure_filename
+import requests
+from flask_mail import Mail, Message
+import random
 import asyncio
 import aiohttp
 
@@ -12,6 +11,8 @@ app.secret_key = "supersecretkey"
 
 ASI_API_KEY = "sk_5e8dbfb687c84cc0b32ca1ef309e329d6e49084d44aa4c61a9a1bc5fbd92064f"
 
+
+# Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mentors.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -34,11 +35,9 @@ class Mentor(db.Model):
     tone = db.Column(db.String(100))
     mascot = db.Column(db.String(100))
 
-
 with app.app_context():
     db.create_all()
     
-
 
 # ---------------- LANDING PAGE ---------------- #
 @app.route('/')
@@ -62,7 +61,7 @@ def questionnaire():
             personality=request.form['personality'],
             hobbies=request.form['hobbies'],
             tone=request.form['tone'],
-            mascot=request.form['mascot']
+            mascot=request.form['mascot'],
         )
         db.session.add(new_mentor)
         db.session.commit()
@@ -73,9 +72,7 @@ def questionnaire():
 
 import random
 
-
-import aiohttp
-
+# ---------------- LINKD SEARCH FUNCTIONALITY ---------------- #
 async def send_query_to_linkd(query):
     try:
         async with aiohttp.ClientSession() as session:
@@ -103,7 +100,6 @@ async def send_query_to_linkd(query):
                     selected_image = random.choice(['chai-latte.png', 'cold-brew.png', 'espresso.png', 'latte.png', 'matcha.png'])
                     profile_picture_url = f"/static/{selected_image}"
 
-                    # Prepare parsed result for display
                     parsed_result = {
                         "all": profile,
                         "display_name": profile.get("name", "No name"),
@@ -114,7 +110,7 @@ async def send_query_to_linkd(query):
                     }
 
                     parsed_results.append(parsed_result)
-                    
+
                     # Add mentor data to the database
                     new_mentor = Mentor(
                         full_name=profile.get("name", "No name"),
@@ -123,23 +119,20 @@ async def send_query_to_linkd(query):
                         field=profile.get("title", "No field"),
                         bio=profile.get("experience", " "),
                         personality=profile.get("description", "Unknown"),
-                        hobbies=profile.get("hobbies", "Unknown"),
+                        hobbies=profile.get("hobbies", "N/A"),
                         tone=profile.get("tone", "Friendly"),
-                        mascot=profile_picture_url 
+                        mascot=profile_picture_url,
                     )
 
-                    # Save the new mentor to the database
                     db.session.add(new_mentor)
                     db.session.commit()
 
-                # Return the parsed results and the total count
                 return parsed_results, total
     except Exception as e:
         print(f"Error fetching mentor data: {e}")
         return [], 0
 
-    
-# Routes for the Linkd Search functionality (App 1)
+# ---------------- NETWORK PAGE ---------------- #
 @app.route("/network", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -150,8 +143,6 @@ def index():
         return render_template("network.html", query=query, results=results, total=total, mentors=Mentor.query.all())
     return render_template("network.html", query=None, results=None, total=None, mentors=Mentor.query.all())
 
-
-
 # ---------------- CHAT PAGE ---------------- #
 @app.route('/chat/<int:mentor_id>', methods=['GET', 'POST'])
 def chat(mentor_id):
@@ -160,7 +151,6 @@ def chat(mentor_id):
     if str(mentor_id) not in session:
         session[str(mentor_id)] = []
 
-        # First system prompt
         intro_prompt = {
             "role": "user",
             "content": f"""
@@ -169,14 +159,12 @@ def chat(mentor_id):
             - Field: {mentor.field}
             - Bio: {mentor.bio}
             - Personality: {mentor.personality}
-            - Hobbies: {mentor.hobbies}
             Speak with a {mentor.tone} tone.
             NEVER share private information. Respond like a real mentor version of {mentor.display_name}. Do not share any information about yourself, unless asked to do so. Do not give an output in Markdown. Talk normally. Do not talk about the tone you are using. 
             """
         }
         session[str(mentor_id)].append(intro_prompt)
 
-        # Friendly welcome message
         welcome_message = {
             "role": "assistant",
             "content": f"Hey there! 👋 I'm {mentor.display_name} from {mentor.institution}. I'm your AI mentor, excited to help you with anything you need!"
@@ -200,14 +188,13 @@ def chat(mentor_id):
             'Accept': 'application/json',
             'Authorization': f'Bearer {ASI_API_KEY}'
         }
-
         response = requests.post(url, headers=headers, json=payload)
         data = response.json()
 
         assistant_reply = data.get('choices', [{}])[0].get('message', {}).get('content', 'No response')
         session[str(mentor_id)].append({"role": "assistant", "content": assistant_reply})
 
-    return render_template('chat.html', messages=session[str(mentor_id)], name=mentor.display_name)
+    return render_template('chat.html', messages=session[str(mentor_id)], name=mentor.display_name, mentor=mentor)
 
 # ---------------- RESET PAGE ---------------- #
 @app.route('/reset/')
@@ -215,11 +202,37 @@ def reset_mentor_chat():
     session.clear()
     return redirect('/network') 
 
-# ---------------- NETWORK PAGE ---------------- #
-@app.route('/network')
-def network():
-    mentors = Mentor.query.all()
-    return render_template('network.html', mentors=mentors)
+
+
+# ---------------- SEND EMAIL PAGE ---------------- #
+@app.route('/send-email/<int:mentor_id>', methods=['POST'])
+def send_email(mentor_id):
+    mentor = Mentor.query.get_or_404(mentor_id)
+    user_email = request.form['email']  # Get the user's email
+    
+        # Flask-Mail Configuration (ensure to update with your email credentials)
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Use your SMTP server
+    app.config['MAIL_PORT'] = 587  # Use TLS
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    app.config['MAIL_USERNAME'] = user_email  # Your email address
+    app.config['MAIL_PASSWORD'] = 'lahacksyay'  # Your email password
+    app.config['MAIL_DEFAULT_SENDER'] =  mentor.hobbies # Default sender email
+
+    mail = Mail(app)
+
+    subject = f"Connect with {mentor.display_name}"
+    body = f"Hi {mentor.display_name},\n\nI would love to connect with you and learn more about your expertise!" 
+
+    # Send email to the mentor's email
+    msg = Message(subject=subject, recipients=[mentor.hobbies], body=body)
+
+    try:
+        mail.send(msg)
+        return redirect(f'/chat/{mentor_id}')
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return "We will send the email shortly", 500
 
 # ---------------- MAIN ---------------- #
 if __name__ == '__main__':
