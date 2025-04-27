@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Results</title>
+</head>
+<body>
+    <h1>Found {{ total }} mentors</h1>
+    <div>
+        {% for mentor in results %}
+            <div>
+                <img src="{{ mentor.profile_picture_url }}" alt="{{ mentor.display_name }}">
+                <h2>{{ mentor.display_name }}</h2>
+                <p><strong>Institution:</strong> {{ mentor.institution }}</p>
+                <p><strong>School:</strong> {{ mentor.school }}</p>
+                <p><strong>Field:</strong> {{ mentor.field }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
