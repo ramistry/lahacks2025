@@ -33,7 +33,7 @@
   <div class="flex flex-wrap justify-center gap-10 mt-10">
     {% for mentor in mentors %}
       <div class="mentor-card">
-        <img src="/static/"+{{ mentor.mascot }}> </img>
+        <img src={{mentor.mascot}}
         <h2 class="mentor-name">{{ mentor.display_name }}</h2>
         <p class="mentor-info">{{ mentor.institution }}</p>
         <p class="mentor-info">{{ mentor.field }}</p>
@@ -55,23 +55,6 @@
   </form>
 
   {% if results %}
-    <h3 class="text-2xl font-semibold text-gray-800">Results for: "{{ query }}"</h3>
-    <p>Total Results: {{ total }}</p>
-    <div class="flex flex-wrap justify-center gap-10 mt-10">
-      {% for result in results %}
-        <div class="mentor-card">
-          <!-- Display Linkd result data as AI persona cards -->
-          <img src="{{ result.profile_picture_url }}" alt="{{ result.display_name }}" class="mentor-image">
-          <h2 class="mentor-name">{{ result.display_name }}</h2>
-          <p class="mentor-info">{{ result.institution }}</p>
-          <p class="mentor-info">{{ result.field }}</p>
-          <p class="mentor-info">{{ result.bio }}</p>
-          <!-- Modify this link to route to /chat/linkd/{{ result.display_name }} -->
-            Chat with {{ result.display_name }}
-          </a>
-        </div>
-      {% endfor %}
-    </div>
 {% elif query %}
     <p>No results found for "{{ query }}". Try again!</p>
 {% endif %}

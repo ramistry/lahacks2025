@@ -210,10 +210,10 @@ def chat(mentor_id):
     return render_template('chat.html', messages=session[str(mentor_id)], name=mentor.display_name)
 
 # ---------------- RESET PAGE ---------------- #
-@app.route('/reset/<int:mentor_id>')
-def reset_mentor_chat(mentor_id):
-    session.pop(str(mentor_id), None)
-    return redirect(f'/chat/{mentor_id}')
+@app.route('/reset/')
+def reset_mentor_chat():
+    session.clear()
+    return redirect('/network') 
 
 # ---------------- NETWORK PAGE ---------------- #
 @app.route('/network')
