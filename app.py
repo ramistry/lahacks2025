@@ -4,6 +4,9 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
+import aiohttp
+import asyncio
+
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -130,10 +133,15 @@ def reset_mentor_chat(mentor_id):
     return redirect(f'/chat/{mentor_id}')
 
 # ---------------- NETWORK PAGE ---------------- #
-@app.route('/network')
-def network():
-    mentors = Mentor.query.all()
-    return render_template('network.html', mentors=mentors)
+@app.route("/network", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        query = request.form["query"]
+        loop = asyncio.new_event_loop()  # Create a new event loop for the async function
+        asyncio.set_event_loop(loop)
+        results, total = loop.run_until_complete(send_query_to_linkd(query))
+        return render_template("network.html", query=query, results=results, total=total, mentors=Mentor.query.all())
+    return render_template("network.html", query=None, results=None, total=None, mentors=Mentor.query.all())
 
 # ---------------- MAIN ---------------- #
 if __name__ == '__main__':

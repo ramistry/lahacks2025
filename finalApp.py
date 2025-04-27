@@ -7,6 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
+ASI_API_KEY = "sk_5e8dbfb687c84cc0b32ca1ef309e329d6e49084d44aa4c61a9a1bc5fbd92064f"
+
 # Configuration for database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mentors.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

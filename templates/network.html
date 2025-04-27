@@ -7,15 +7,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background: linear-gradient(to right, #ece9e6, #ffffff);}
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background-color: #ece9e6; /* Solid beige background */
+      margin: 0; 
+      padding: 20px; 
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
     .glass {
       background: rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(12px);
       border-radius: 20px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
+
     .btn {
-      background-color: #007bff;
+      background-color: black; /* Black buttons */
       color: white;
       border: none;
       border-radius: 4px;
@@ -23,9 +38,11 @@
       padding: 10px 20px;
       text-align: center;
     }
+
     .btn:hover {
-      background-color: #0056b3;
+      background-color: #333; /* Darker black on hover */
     }
+
     .input-field {
       width: 100%;
       padding: 10px;
@@ -33,16 +50,19 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+
     .results {
       margin-top: 20px;
     }
+
     .result-item {
       margin-bottom: 10px;
       padding: 10px;
       background-color: #f8f9fa;
       border-radius: 4px;
     }
-    /* Mentor Cards */
+
+    /* Center-align the mentor cards */
     .mentor-card {
       width: 320px;
       padding: 20px;
@@ -52,23 +72,30 @@
       border-radius: 15px;
       margin: 10px;
       transition: transform 0.3s ease;
+      text-align: center; /* Center-align text and content */
     }
+
     .mentor-card:hover {
       transform: scale(1.05);
     }
+
+    /* Centering the mentor image */
     .mentor-image {
       width: 80px;
       height: 80px;
       border-radius: 50%;
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+      margin: 0 auto; /* Centering image horizontally */
     }
+
     .mentor-name {
       font-size: 1.2rem;
       font-weight: bold;
       color: #333;
     }
+
     .mentor-button {
-      background-color: #007bff;
+      background-color: black; /* Black button for chat */
       color: white;
       font-weight: bold;
       padding: 10px 15px;
@@ -77,8 +104,9 @@
       display: inline-block;
       margin-top: 10px;
     }
+
     .mentor-button:hover {
-      background-color: #0056b3;
+      background-color: #333; /* Darker black on hover */
     }
   </style>
 </head>
@@ -126,10 +154,10 @@
   </div>
 </section>
 
-<!-- AI Query Search Section (App 1) -->
-<section class="flex flex-col items-center pt-12 p-8 space-y-8 bg-gray-100">
-  <h2 class="text-3xl font-bold text-gray-800">AI Query Search 🔍</h2>
-  <p class="text-gray-600 max-w-2xl text-center text-lg">Want to search for people working on specific topics? Use our AI-powered search below!</p>
+<!-- AI Query Search Section -->
+<section class="flex flex-col items-center pt-12 p-8 space-y-8 ">
+  <h2 class="text-3xl font-bold text-gray-800">Don't find anyone you like?</h2>
+  <p class="text-gray-600 max-w-2xl text-center text-lg">Use our AI-powered search below to search for your ideal Mentor.</p>
   
   <form method="POST" class="flex flex-col items-center space-y-4 w-full max-w-lg">
     <input type="text" name="query" placeholder="Enter your search query..." class="input-field" required>
