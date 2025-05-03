@@ -9,7 +9,7 @@ import aiohttp
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-GEMINI_API_KEY = "AIzaSyDCQeFRAGYpWNS2FDTJeuDoxCNRfsDl8gU"  # Replace with your actual API key
+GEMINI_API_KEY = ""  # Replace with your actual API key
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 
