@@ -74,22 +74,7 @@ def questionnaire():
 
     return render_template('questionnaire.html')
 
-# @app.route('/generate_pathway/<int:mentor_id>', methods=['GET'])
-# def generate_pathway(mentor_id):
-#     mentor = Mentor.query.get_or_404(mentor_id)  # This fetches the mentor by their ID
 
-#     profile_data = {
-#         'name': mentor.display_name,
-#         'headline': mentor.field,
-#         'title': mentor.field,  # Using 'field' here as 'title' can be stored in a different column if needed
-#         'company': mentor.institution,  # Institution holds the company name
-#         'education': mentor.education if mentor.education else "No education available"
-#     }
-
-#     # Generate the learning pathway using the Gemini API
-#     pathway = asyncio.run(generate_learning_pathway(profile_data))
-
-#     return render_template('pathway.html', pathway=pathway, mentor_name=mentor.display_name)
 @app.route('/generate_pathway_by_name/<string:mentor_name>', methods=['GET'])
 def generate_pathway_by_name(mentor_name):
     mentor = Mentor.query.filter_by(display_name=mentor_name).first()
@@ -109,35 +94,6 @@ def generate_pathway_by_name(mentor_name):
     return render_template('pathway.html', pathway=pathway, mentor_name=mentor.display_name)
 
 
-
-# ---------------- GENERATE LEARNING PATHWAY ---------------- #
-# async def generate_learning_pathway(profile):
-#     prompt = (
-#         f"Create a detailed, specific learning pathway for the following individual. "
-#         f"Include concrete steps and recommended resources, and make sure the points are complete and actionable. "
-#         f"Research and infer information about the specific role and company when necessary.\n\n"
-#         f"Name: {profile['name']}\n"
-#         f"Role: {profile['title']}\n"  # Specify role, e.g., 'Software Engineer at Meta'
-#         f"Company: {profile['company']}\n"
-#         f"Education: {profile['education']}\n\n"
-#         f"Steps should include: Tech stack for their role, relevant skills, practical projects, resources (like online courses, tutorials), and any tools specific to the company. "
-#         f"Don't include any incomplete or vague points. Focus on actionable, specific skills related to their role.\n\n"
-#         f"Example response format: [Phase] - [Goal] - [Specific Actionable Steps with Resources] - [Links]."
-#         f"Do not use any `**` or similar markdown syntax."
-#     )
-
-#     headers = {"Content-Type": "application/json"}
-#     params = {"key": GEMINI_API_KEY}
-#     data = {"contents": [{"parts": [{"text": prompt}]}]}
-
-#     async with aiohttp.ClientSession() as session:
-#         async with session.post(GEMINI_API_URL, params=params, headers=headers, json=data) as response:
-#             response_json = await response.json()
-            
-#             steps_text = response_json.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-#             steps = steps_text.strip().split("\n")
-#             steps = [step.strip() for step in steps if step.strip()]
-#             return steps
 
 async def generate_learning_pathway(profile):
     prompt = (
@@ -173,7 +129,7 @@ async def generate_learning_pathway(profile):
 
 
         
-# AIzaSyDCQeFRAGYpWNS2FDTJeuDoxCNRfsDl8gU
+
 
 import random
 
